@@ -1,4 +1,4 @@
-import { Buffer } from "node:buffer";
+ import { Buffer } from "node:buffer";
 
 export default {
   async fetch (request) {
@@ -157,7 +157,9 @@ if (req.stream) { url += "?alt=sse"; }
 
 // 修改点1：添加 generationConfig 参数
 const transformedReq = await transformRequest(req);
-transformedReq.generationConfig = { thinkingMode: "COMPACT" }; // Google官方参数名
+transformedReq.generationConfig = { 
+  thinkingMode: "COMPACT"
+}; // Google官方参数名
 
 const response = await fetch(url, {
   method: "POST",
