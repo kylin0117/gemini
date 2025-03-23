@@ -150,14 +150,21 @@ async function handleCompletions (req, apiKey) {
     case req.model.startsWith("learnlm-"):
       model = req.model;
   }
-  const TASK = req.stream ? "streamGenerateContent" : "generateContent";
-  let url = `${BASE_URL}/${API_VERSION}/models/${model}:${TASK}`;
-  if (req.stream) { url += "?alt=sse"; }
-  const response = await fetch(url, {
-    method: "POST",
-    headers: makeHeaders(apiKey, { "Content-Type": "application/json" }),
-    body: JSON.stringify(await transformRequest(req)), // try
-  });
+ 
+const TASK = req.stream ? "streamGenerateContent" : "generateContent";
+let url = `${BASE_URL}/${API_VERSION}/models/${model}:${TASK}`;
+if (req.stream) { url += "?alt=sse"; }
+
+// 修改点1：添加 generationConfig 参数
+const transformedReq = await transformRequest(req);
+transformedReq.generationConfig = { thinkingMode: "COMPACT" }; // Google官方参数名
+
+const response = await fetch(url, {
+  method: "POST",
+  headers: makeHeaders(apiKey, { "Content-Type": "application/json" }),
+  body: JSON.stringify(transformedReq), // 使用包含新参数的请求体
+});
+ 
 
   let body = response.body;
   if (response.ok) {
